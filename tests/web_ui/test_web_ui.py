@@ -12,68 +12,75 @@ import pytest
 import selene
 from selenium.webdriver import ActionChains
 
+from tests.web_ui.application_manager import app
 
-@pytest.mark.web
-@allure.description('Test open auth form')
-def test_open_auth_form(open_main_page):
-	"""
-	test open auth form modal window
-	:return:
-	"""
-	with allure.step('Клик на кнопку "Войти"'):
-		browser.element('[class="user-profile__login-icon"]').click()
-	with allure.step('Форма Входа в Личный Кабинет присутствует на странице'):
-		browser.element('[class="user-profile__guest-text"]')\
-			.should(have.text('Получайте бонусы, сохраняйте и отслеживайте заказы.'))
+
+search_value = 'PlayStation 5'
+first_subcategory = "ПК, ноутбуки, периферия"
+second_subcategory = "Ноутбуки и аксессуары"
+third_subcategory = "Ноутбуки"
+
 
 
 @pytest.mark.web
-@allure.description('Test search is working')
-def test_search_functionality(open_main_page):
+@allure.description('TEST: Open user profile')
+def test_open_user_profile(open_main_page):
 	"""
-	test search func
-	:return:
+	TEST: Open user profile
 	"""
-	with allure.step('Клик на поле поиск'):
-		search_input = browser.element('nav [type="search"]')
-		search_input.click()
-	with allure.step('Заполняем поле поиск'):
-		search_input.send_keys('playstation 5').press_enter()
-	with allure.step('В результатах поиска присутствует текст запроса'):
-		browser.element('[class="products-list__content"]')\
-			.should(have.text('PlayStation 5'))
+	app.main_page\
+		.move_to_element_enter()\
+		.should_be_user_profile_present()
 
 
 @pytest.mark.web
-@allure.description('Test go to subcategory page desktop')
+@allure.description('TEST: Open entry form')
+def test_open_entry_form(open_main_page):
+	"""
+	TEST: Open entry form
+	"""
+	app.main_page.\
+		move_to_element_enter().\
+		click_on_enter_button().\
+		should_be_entry_form_present()
+
+
+@pytest.mark.web
+@allure.description('TEST: Query results')
+def test_search_results(open_main_page):
+	"""
+	TEST: Query results
+	"""
+	app.main_page.\
+		fill_search_input(search_value)
+	app.catalog_page.should_be_correct_results(search_value)
+
+
+@pytest.mark.web
+@allure.description('TEST: Go to subcategory')
 def test_open_subcategory_desktop(open_main_page):
 	"""
-	test open_shops_moscow
-	:param open_main_page:
-	:return:
+	TEST: Go to subcategory
 	"""
-	with allure.step('Клик на кнопку "ПК, ноутбуки, периферия"'):
-		desktop_button = browser.all('[class="ui-link menu-desktop__root-title"]')[4]
-		desktop_button.click()
-	with allure.step('Открыта страница ПК, нотбуки, периферия'):
-		browser.element('[class="subcategory__page-title"]')\
-			.should(have.text('ПК, ноутбуки, периферия'))
+	app.main_page.\
+		click_on_first_subcategory(first_subcategory).\
+		should_be_correct_first_category_title(first_subcategory)
 
 
 @pytest.mark.web
-@allure.description('Test add to wishlist')
-def test_add_to_wishlist(open_main_page):
+@allure.description('TEST: Open laptop list')
+def test_open_laptop_list(open_main_page):
 	"""
+	TEST: Open laptop list
+	"""
+	app.main_page.\
+		click_on_first_subcategory(first_subcategory)
+	app.catalog_page.\
+		click_on_subcategory(second_subcategory).\
+		should_be_correct_subcategory_title(second_subcategory).\
+		click_on_subcategory(third_subcategory). \
+		should_be_correct_title(third_subcategory)
 
-	:param open_main_page:
-	:return:
-	"""
-	with allure.step('Клик на Смартфоны'):
-		browser.element('[class="homepage-brands__item tns-item tns-slide-active"]').click()
-		time.sleep(5)
-		browser.element('[class="button-ui button-ui_white button-ui_icon wishlist-btn"]').click()
-		time.sleep(5)
-		browser.element('[class="wishlist-link__lbl"]').click()
 
 
 
