@@ -19,6 +19,8 @@ search_value = 'PlayStation 5'
 first_subcategory = "ПК, ноутбуки, периферия"
 second_subcategory = "Ноутбуки и аксессуары"
 third_subcategory = "Ноутбуки"
+product_value = "Apple iPhone 14 Pro Max 256 ГБ фиолетовый"
+
 
 
 
@@ -82,6 +84,35 @@ def test_open_laptop_list(open_main_page):
 		should_be_correct_title(third_subcategory)
 
 
+@pytest.mark.web
+@allure.description(f'TEST: Open product {product_value} page')
+def test_open_product_page(open_main_page):
+	"""
+	TEST: Open product page
+	"""
+	app.main_page.\
+		fill_search_input(product_value)
+	app.catalog_page.\
+		should_be_correct_results(product_value).\
+		click_on_product_name(product_value)
+	app.product_page.\
+		should_be_product_title_is_present(product_value)
+
+
+@pytest.mark.web
+@allure.description(f'TEST: Add product {product_value} to wishlist')
+def test_add_product_to_wishlist(open_main_page):
+	"""
+	TEST: Add to wishlist
+	"""
+	app.main_page.\
+		fill_search_input(product_value)
+	app.catalog_page.\
+		click_on_product_name(product_value)
+	app.product_page.\
+		click_on_add_to_wishlist_button(). \
+		should_be_wishlist_button_is_done().\
+		should_be_wishlist_bange_is_one()
 
 
 

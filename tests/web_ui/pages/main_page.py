@@ -48,5 +48,6 @@ class MainPage:
 	@step
 	def should_be_correct_first_category_title(self, value):
 		browser.element('[class="subcategory__page-title"]').should(have.text(value))
+		return self
 
 
