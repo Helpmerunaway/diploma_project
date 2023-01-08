@@ -1,7 +1,5 @@
 import os
 import time
-
-import pytest
 from selene import command, be
 from selene.support.conditions import have
 from selene.support.shared import browser
@@ -12,6 +10,38 @@ from dotenv import load_dotenv
 # from ui.helpers import attach
 
 BASE_URL = 'https://www.dns-shop.ru/'
+
+
+# обертка над библиотекой requests
+import allure
+import pytest
+import requests
+
+
+class ApiClient:
+	def __init__(self, base_address):
+		self.base_address = base_address
+
+	# аргументы функции path, params, headers передаются в гет
+	def get(self, path="/", params=None, headers=None):
+		url = f"{self.base_address}{path}"
+		with allure.step(f"GET request to: {url}"):
+			return requests.get(url=url, params=params, headers=headers)
+
+	def post(self, path='/', params=None, data=None, json=None, headers=None):
+		url = f"{self.base_address}{path}"
+		with allure.step(f"POST request to: {url}"):
+			return requests.post(url=url, params=params, data=data, json=json, headers=headers)
+
+
+@pytest.fixture
+def dog_api():
+	return ApiClient(base_address='https://dog.ceo/api/')
+
+
+@pytest.fixture(scope='session', autouse=True)
+def auto_env():
+    load_dotenv()
 
 
 @pytest.fixture(scope='function', autouse=True)
